@@ -313,6 +313,30 @@
   .foot-note{text-align:center;color:var(--mut2);font-size:11.5px;padding:20px}
   .foot-note b{color:var(--uni)}
 
+  /* ---------- treinos crud / forms ---------- */
+  .switch{width:42px;height:24px;border-radius:999px;background:var(--line);position:relative;transition:.2s;flex:none;cursor:pointer}
+  .switch.on{background:var(--ok)}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .switch.on::after{left:20px}
+  .tcard.off{opacity:.55}
+  .tcard .tactions{display:flex;gap:6px;margin-top:12px;border-top:1px solid var(--line2);padding-top:12px}
+  .form-row{display:flex;gap:12px}
+  .flabel2{font-size:12px;font-weight:800;color:var(--ink);display:block;margin-bottom:6px}
+  .inp{width:100%;height:46px;border:1.5px solid var(--line);border-radius:11px;padding:0 12px;font-size:14px;outline:none;background:#fff}
+  .inp:focus{border-color:var(--uni);box-shadow:0 0 0 4px var(--uni-l)}
+  .stat-strip{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+  .stat-strip .s{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;box-shadow:var(--sh);flex:1;min-width:130px}
+  .stat-strip .s b{font-size:22px;letter-spacing:-.5px}.stat-strip .s small{color:var(--mut);font-size:12px;font-weight:600;display:block}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#0e1424;color:#fff;padding:12px 18px;border-radius:12px;font-size:13.5px;font-weight:600;box-shadow:var(--sh-lg);z-index:100;opacity:0;pointer-events:none;transition:.25s;display:flex;align-items:center;gap:9px}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic-svg{width:17px;height:17px;color:#4fd0a0}
+
+  /* ---------- carteirinha: não habilitado ---------- */
+  .miss-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:2px 16px 14px}
+  .miss-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#8a93a6;background:#f4f6fb;border:1px dashed #d7dce8;border-radius:999px;padding:5px 9px}
+  .miss-chip .ic-svg{width:12px;height:12px;color:#aab2c4}
+  .card-foot{padding:11px 16px;border-top:1px solid var(--line2);display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--mut2);font-weight:600}
+
   /* ---------- responsive ---------- */
   .sb-overlay{display:none}
   @media(max-width:980px){
@@ -506,15 +530,14 @@ function execCard(e){
   const aso=asoDate(e),asoS=daysTo(aso)<0?'bad':(daysTo(aso)<=30?'warn':'ok');
   const ig=integ(e),igS=daysTo(ig)<0?'bad':(daysTo(ig)<=30?'warn':'ok');
   const tint=c=>`background:${c}14;color:${c}`;
-  const used=new Set();
   const filled=(name,label,t)=>{const s=trStatus(t),d=daysTo(t.vencimento),c=catColor(name);
     return `<div class="gtile ${s}"><div class="gt"><div class="gi" style="${tint(c)}">${icoFor(name,18)}</div><div class="gn">${esc(label)}</div></div>
       <div class="gd"><span class="dt" style="color:var(--${s})">${fmt(t.vencimento)}</span><span class="mini-pill ${s}">${s==='bad'?'vencido':s==='warn'?d+'d':'válido'}</span></div></div>`;};
-  const tiles=EXEC_CAT.map(c=>{const t=findTr(e,c.kw,c.req,c.exc);
-    if(t){used.add(t.nome);return filled(c.lb,c.lb,t);}
-    return `<div class="gtile na"><span class="lock">${ico('cert',13)}</span><div class="gt"><div class="gi">${icoFor(c.lb,18)}</div><div class="gn">${c.lb}</div></div><div class="gd"><span class="dt na">não habilitado</span></div></div>`;}).join('');
-  const outros=e.trainings.filter(t=>!used.has(t.nome));
-  const outrosHtml=outros.length?'<div class="tr-sec" style="padding:12px 16px 2px">Outros treinamentos</div><div class="exec-grid">'+outros.map(t=>filled(t.nome,t.nome,t)).join('')+'</div>':'';
+  const sev={bad:0,warn:1,ok:2};
+  const habil=e.trainings.slice().sort((a,b)=>sev[trStatus(a)]-sev[trStatus(b)]||a.nome.localeCompare(b.nome));
+  const tiles=habil.map(t=>filled(t.nome,t.nome,t)).join('');
+  const missing=EXEC_CAT.filter(c=>!findTr(e,c.kw,c.req,c.exc));
+  const missHtml=missing.length?'<div class="tr-sec" style="padding:12px 16px 6px">Não habilitado</div><div class="miss-wrap">'+missing.map(c=>`<span class="miss-chip">${icoFor(c.lb,12)} ${c.lb}</span>`).join('')+'</div>':'';
   return `
     <div class="cart-head">${brand(40)}<div class="ht"><b>UNILEVER</b><small>Carteirinha de Treinamentos</small></div><span class="chipw">Executor</span></div>
     <div class="secband"></div>
@@ -529,14 +552,15 @@ function execCard(e){
       <div class="idcell"><small>Renov. ASO</small><b class="${asoS}">${asoS==='bad'?'Vencido':fmt(aso)}</b></div>
     </div>
     <div class="status-strip ${sc}"><span class="dot"></span>${sl}</div>
-    <div class="tr-sec" style="padding:12px 16px 2px">Validade dos treinamentos</div>
+    <div class="tr-sec" style="padding:12px 16px 4px">Habilitações ativas · ${habil.length}</div>
     <div class="exec-grid">${tiles}</div>
-    ${outrosHtml}
+    ${missHtml}
     <div class="warnbar">${ico('flame',14)} Não opere equipamentos com habilitação vencida</div>
     <div class="sign-row">
       <div class="sign"><div class="sc" style="background:var(--ok)">${ico('shield',16)}</div><div><small>Visto SHE</small><b style="color:var(--ok)">Segurança ✓</b></div></div>
       <div class="sign"><div class="sc" style="background:var(--${asoS==='bad'?'bad':'ok'})">${ico('cert',16)}</div><div><small>Visto Saúde</small><b style="color:var(--${asoS==='bad'?'bad':'ok'})">${asoS==='bad'?'ASO vencido':'ASO válido'}</b></div></div>
-    </div>`;
+    </div>
+    <div class="card-foot"><span>Emitido 27/08/2026</span><span>UNI-${e.re}-${(parseInt(e.re)%9973)}</span></div>`;
 }
 function libCard(e){
   const tint=c=>`background:${c}14;color:${c}`;
@@ -690,6 +714,9 @@ function route(k,param){state.route=k;state.param=param||null;document.body.clas
 function renderRoute(){const c=document.getElementById('content');if(!c)return;
   const R={dash:viewDash,colabs:viewColabs,cards:viewCards,treinos:viewTreinos,alertas:viewAlertas,integ:viewInteg,audit:viewAudit,config:viewConfig,colab:viewColab};
   c.innerHTML=(R[state.route]||viewDash)();
+  if(state.route==='colabs')renderColabTable();
+  if(state.route==='treinos')renderTreinoGrid();
+  if(state.route==='cards')renderCardPick();
   drawQRs();}
 function toggleSb(v){document.body.classList.toggle('sb-open',v);}
 function topSearch(v){state.q=v;if(state.route!=='colabs')route('colabs');else renderColabTable();
@@ -810,17 +837,91 @@ function renderCardPick(){const q=(document.getElementById('card-search')?.value
   document.getElementById('card-pick').innerHTML=rows.slice(0,8).map(e=>`<div class="lrow" onclick="pickCard('${e.re}')"><div class="av" style="background:${color(e.nome)}">${initials(e.nome)}</div><div style="flex:1"><b>${esc(e.nome)}</b><small>RE ${e.re} · ${esc(e.area)}</small></div>${ui('chev',16)}</div>`).join('')||'<p style="color:var(--mut);font-size:13px">Nada encontrado.</p>';}
 function pickCard(re){state.curEmp=DATA.find(x=>x.re===re);state.type='exec';renderRoute();drawQRs();}
 
-function viewTreinos(){
-  const m={};DATA.forEach(e=>e.trainings.forEach(t=>{m[t.nome]=m[t.nome]||{c:0,val:t.validadeDias,tipo:t.tipo,ok:0,bad:0};m[t.nome].c++;const s=trStatus(t);if(s==='bad')m[t.nome].bad++;else if(s==='ok')m[t.nome].ok++;}));
-  const arr=Object.entries(m).sort((a,b)=>b[1].c-a[1].c);
-  return `<div class="ph"><div><h1>Treinamentos</h1><p>Catálogo de treinamentos e regras de validade.</p></div>
-    <div class="sp"><button class="btn pri" onclick="alertMock('novo tipo de treinamento')">${ui('plus',16)} Novo treinamento</button></div></div>
-  <div class="tgrid">${arr.map(([n,v])=>{const c=catColor(n);return `<div class="tcard"><div class="th"><div class="tic" style="background:${c}14;color:${c}">${icoFor(n,22)}</div><b>${esc(n)}</b></div>
-    <div class="row"><span>Tipo</span><span class="tag">${v.tipo}</span></div>
-    <div class="row"><span>Validade</span><b>${(v.val/365).toFixed(1).replace('.0','')} anos</b></div>
-    <div class="row"><span>Habilitados</span><b>${v.c}</b></div>
-    <div class="row"><span>Vencidos</span><b style="color:${v.bad?'var(--bad)':'var(--ok)'}">${v.bad}</b></div></div>`;}).join('')}</div>`;
+/* ===== Treinamentos (módulo funcional) ===== */
+const CATLABELS={bolt:'Elétrico',flame:'Inflamável / Quente',altura:'Altura',confinado:'Espaço confinado',forklift:'Empilhadeira',pallet:'Paleteira',hoist:'Talha',lift:'Plataforma elevatória',crane:'Guindaste / Içamento',scaffold:'Andaime',gear:'Máquina / Equipamento',shovel:'Escavação',valve:'Line breaking',wheel:'Condução',burst:'Atmosfera explosiva',shield:'PSM',cert:'Geral / Certificado'};
+let TRAINCAT=null;
+function initTrainCat(){if(TRAINCAT)return;const m={};
+  DATA.forEach(e=>e.trainings.forEach(t=>{if(!m[t.nome])m[t.nome]={nome:t.nome,tipo:t.tipo,validadeDias:t.validadeDias};}));
+  TRAINCAT=Object.values(m).map((t,i)=>({id:'t'+i,nome:t.nome,tipo:t.tipo,validadeDias:t.validadeDias,cat:iconKey(t.nome),ativo:true}));}
+function trainStats(name){let c=0,bad=0,warn=0;DATA.forEach(e=>e.trainings.forEach(t=>{if(t.nome===name){c++;const s=trStatus(t);if(s==='bad')bad++;else if(s==='warn')warn++;}}));return{c,bad,warn};}
+function viewTreinos(){initTrainCat();
+  const total=TRAINCAT.length,ativos=TRAINCAT.filter(t=>t.ativo).length;
+  let hab=0,venc=0;TRAINCAT.forEach(t=>{const s=trainStats(t.nome);hab+=s.c;venc+=s.bad;});
+  return `<div class="ph"><div><h1>Treinamentos</h1><p>Catálogo de treinamentos e regras de validade. Adicione, edite e ative/desative.</p></div>
+    <div class="sp"><button class="btn pri" onclick="openTrainingModal(null)">${ui('plus',16)} Novo treinamento</button></div></div>
+  <div class="stat-strip">
+    <div class="s"><b>${total}</b><small>tipos no catálogo</small></div>
+    <div class="s"><b style="color:var(--ok)">${ativos}</b><small>ativos</small></div>
+    <div class="s"><b>${hab.toLocaleString('pt-BR')}</b><small>habilitações</small></div>
+    <div class="s"><b style="color:${venc?'var(--bad)':'var(--ok)'}">${venc}</b><small>vencidas</small></div>
+  </div>
+  <div class="toolbar">
+    <div class="search">${ui('search',18)}<input id="treino-search" placeholder="Buscar treinamento..." oninput="renderTreinoGrid()"></div>
+    <select class="fsel" id="treino-tipo" onchange="renderTreinoGrid()"><option value="">Todos os tipos</option><option>Legal</option><option>Mandatório</option><option>UMS</option></select>
+  </div>
+  <div class="tgrid" id="treino-grid"></div>`;
 }
+function renderTreinoGrid(){initTrainCat();
+  const q=(document.getElementById('treino-search')?.value||'').toLowerCase();
+  const ft=document.getElementById('treino-tipo')?.value||'';
+  let arr=TRAINCAT.filter(t=>{if(q&&!t.nome.toLowerCase().includes(q))return false;if(ft&&t.tipo!==ft)return false;return true;});
+  arr.sort((a,b)=>trainStats(b.nome).c-trainStats(a.nome).c);
+  const g=document.getElementById('treino-grid');if(!g)return;
+  g.innerHTML=arr.map(t=>{const s=trainStats(t.nome),c=CATCOL[t.cat]||'#1f36c7';
+    return `<div class="tcard ${t.ativo?'':'off'}"><div class="th"><div class="tic" style="background:${c}14;color:${c}">${ico(t.cat,22)}</div>
+      <div style="flex:1;min-width:0"><b>${esc(t.nome)}</b><br><small style="color:var(--mut);font-size:11px">${CATLABELS[t.cat]||''}</small></div>
+      <div class="switch ${t.ativo?'on':''}" title="Ativo" onclick="toggleTrainingActive('${t.id}')"></div></div>
+      <div class="row"><span>Tipo</span><span class="tag">${t.tipo}</span></div>
+      <div class="row"><span>Validade</span><b>${(t.validadeDias/365).toFixed(1).replace('.0','')} anos</b></div>
+      <div class="row"><span>Habilitados</span><b>${s.c}</b></div>
+      <div class="row"><span>Vencidos</span><b style="color:${s.bad?'var(--bad)':'var(--ok)'}">${s.bad}</b></div>
+      <div class="tactions"><button class="btn sm" style="flex:1;justify-content:center" onclick="openTrainingModal('${t.id}')">Editar</button>
+        <button class="btn sm" title="Excluir" onclick="askDeleteTraining('${t.id}')">${ui('x',15)}</button></div>
+    </div>`;}).join('')||'<p style="color:var(--mut);grid-column:1/-1">Nenhum treinamento encontrado.</p>';
+}
+function showModal(html){const m=document.getElementById('modal');m.innerHTML=html;document.getElementById('scrim').classList.add('on');m.classList.add('on');}
+function openTrainingModal(id){initTrainCat();
+  const t=id?TRAINCAT.find(x=>x.id===id):null;
+  const anos=t?(t.validadeDias/365).toFixed(1).replace('.0',''):'2';
+  const cat=t?t.cat:'cert';
+  const opts=Object.entries(CATLABELS).map(([k,v])=>`<option value="${k}" ${k===cat?'selected':''}>${v}</option>`).join('');
+  const tp=t?t.tipo:'Legal';
+  showModal(`<div class="mh">${ui('cap',20)}<b>${id?'Editar treinamento':'Novo treinamento'}</b><button class="x" onclick="closeAll()">${ui('x',16)}</button></div>
+    <div class="mb">
+      <div style="margin-bottom:14px"><span class="flabel2">Nome do treinamento</span><input class="inp" id="tf-nome" value="${t?esc(t.nome):''}" placeholder="Ex.: NR35 - Trabalho em Altura"></div>
+      <div class="form-row" style="margin-bottom:14px">
+        <div style="flex:1"><span class="flabel2">Tipo</span><select class="inp" id="tf-tipo">${['Legal','Mandatório','UMS'].map(x=>`<option ${x===tp?'selected':''}>${x}</option>`).join('')}</select></div>
+        <div style="flex:1"><span class="flabel2">Validade (anos)</span><input class="inp" id="tf-anos" type="number" step="0.5" min="0.5" value="${anos}"></div>
+      </div>
+      <div style="margin-bottom:16px"><span class="flabel2">Categoria / ícone</span><select class="inp" id="tf-cat">${opts}</select></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div class="switch ${!t||t.ativo?'on':''}" id="tf-ativo" onclick="this.classList.toggle('on')"></div><span style="font-size:13.5px;font-weight:600">Treinamento ativo</span></div>
+      <div style="display:flex;gap:10px;margin-top:20px"><button class="btn" style="flex:1;justify-content:center" onclick="closeAll()">Cancelar</button>
+        <button class="btn pri" style="flex:1;justify-content:center" onclick="saveTraining(${id?`'${id}'`:'null'})">${id?'Salvar':'Criar'}</button></div>
+    </div>`);
+}
+function saveTraining(id){
+  const nome=(document.getElementById('tf-nome').value||'').trim();
+  if(!nome){toast('Informe o nome do treinamento');return;}
+  const tipo=document.getElementById('tf-tipo').value;
+  const anos=parseFloat(document.getElementById('tf-anos').value)||2;
+  const cat=document.getElementById('tf-cat').value;
+  const ativo=document.getElementById('tf-ativo').classList.contains('on');
+  const validadeDias=Math.round(anos*365);
+  if(id){Object.assign(TRAINCAT.find(x=>x.id===id),{nome,tipo,validadeDias,cat,ativo});}
+  else{TRAINCAT.unshift({id:'t'+Date.now(),nome,tipo,validadeDias,cat,ativo,custom:true});}
+  closeAll();renderRoute();toast(id?'Treinamento atualizado':'Treinamento criado');
+}
+function askDeleteTraining(id){const t=TRAINCAT.find(x=>x.id===id);const s=trainStats(t.nome);
+  showModal(`<div class="mh">${ui('x',20)}<b>Excluir treinamento</b><button class="x" onclick="closeAll()">${ui('x',16)}</button></div>
+    <div class="mb"><p style="font-size:14px;line-height:1.6">Remover <b>${esc(t.nome)}</b> do catálogo?${s.c?` <span style="color:var(--warn)">Há ${s.c} colaborador(es) habilitado(s) neste treinamento.</span>`:''}</p>
+    <div style="display:flex;gap:10px;margin-top:20px"><button class="btn" style="flex:1;justify-content:center" onclick="closeAll()">Cancelar</button>
+      <button class="btn" style="flex:1;justify-content:center;background:var(--bad);color:#fff;border-color:var(--bad)" onclick="deleteTraining('${id}')">Excluir</button></div></div>`);
+}
+function deleteTraining(id){TRAINCAT=TRAINCAT.filter(x=>x.id!==id);closeAll();renderRoute();toast('Treinamento removido');}
+function toggleTrainingActive(id){const t=TRAINCAT.find(x=>x.id===id);t.ativo=!t.ativo;renderTreinoGrid();toast(t.ativo?'Treinamento ativado':'Treinamento desativado');}
+let toastT=null;
+function toast(msg){const el=document.getElementById('toast')||(()=>{const d=document.createElement('div');d.id='toast';d.className='toast';document.body.appendChild(d);return d;})();
+  el.innerHTML=`${ui('shield',17)} ${esc(msg)}`;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2600);}
 
 function viewAlertas(){
   const rows=[];DATA.forEach(e=>e.trainings.forEach(t=>{const s=trStatus(t),d=daysTo(t.vencimento);if(s==='bad'||s==='warn')rows.push({e,t,s,d});}));
