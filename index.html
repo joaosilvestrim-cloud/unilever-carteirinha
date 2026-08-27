@@ -229,59 +229,85 @@
   .foot-note{text-align:center;color:var(--mut);font-size:11.5px;padding:26px}
   .foot-note b{color:var(--uni)}
 
-  /* ---- real-card replica ---- */
-  .cart-head{background:linear-gradient(180deg,#1a6fd6,#1257b8);color:#fff;padding:12px 15px 11px;display:flex;align-items:center;gap:10px}
-  .cart-head.lib{background:linear-gradient(180deg,#16269a,#0f1c73)}
-  .cart-head .ulg{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-weight:900;font-size:18px;flex:none}
-  .cart-head b{font-size:16px;font-weight:800;letter-spacing:.3px;line-height:1.1}
-  .cart-head small{font-size:10px;opacity:.85;display:block;margin-top:2px}
-  .portaria{background:#e9f0fb;color:#1257b8;font-size:10.5px;font-weight:700;text-align:center;padding:6px;border-bottom:1px solid var(--line)}
+  /* ============ CARTEIRINHA DIGITAL (premium) ============ */
+  .ic-svg{display:block}
+  .badge-card{background:#fff;border-radius:22px;overflow:hidden;border:1px solid rgba(16,24,40,.06);
+    box-shadow:0 1px 2px rgba(16,24,40,.06),0 18px 40px -12px rgba(16,24,40,.28)}
 
-  .front{display:flex;gap:12px;padding:14px 15px;border-bottom:1px solid var(--line)}
-  .foto{width:74px;height:92px;border-radius:9px;flex:none;background:linear-gradient(135deg,var(--uni),#3b52e0);color:#fff;display:grid;place-items:center;font-size:28px;font-weight:800;position:relative;overflow:hidden}
-  .foto small{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:8.5px;opacity:.8;font-weight:600}
-  .fdata{flex:1;min-width:0}
-  .frow{display:flex;gap:6px;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--line);align-items:baseline}
-  .frow:last-child{border:none}
-  .frow .k{color:var(--mut);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap}
-  .frow .v{font-weight:700;color:var(--ink);flex:1;text-align:right;overflow:hidden;text-overflow:ellipsis}
-  .frow .v.hand{font-family:'Segoe Script','Bradley Hand',cursive;font-weight:600;color:#16269a;font-size:13px}
-  .frow .v.ok{color:var(--ok)}.frow .v.warn{color:var(--warn)}.frow .v.bad{color:var(--bad)}
+  .cart-head{position:relative;color:#fff;padding:16px 16px 15px;display:flex;align-items:center;gap:11px;overflow:hidden;
+    background:linear-gradient(120deg,#2555d8 0%,#1f36c7 55%,#182aa6 100%)}
+  .cart-head.lib{background:linear-gradient(120deg,#0e8f5c 0%,#0b7d4e 55%,#075f3b 100%)}
+  .cart-head::before{content:"";position:absolute;inset:0;opacity:.5;
+    background:radial-gradient(circle at 1px 1px,rgba(255,255,255,.18) 1px,transparent 0);background-size:9px 9px;-webkit-mask:linear-gradient(90deg,transparent,#000 60%)}
+  .cart-head::after{content:"";position:absolute;top:-60%;right:-10%;width:180px;height:220px;transform:rotate(20deg);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent)}
+  .cart-head .ulg{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+    display:grid;place-items:center;font-weight:900;font-size:20px;flex:none;position:relative;z-index:1;backdrop-filter:blur(4px)}
+  .cart-head .ht{position:relative;z-index:1;flex:1}
+  .cart-head b{font-size:17px;font-weight:800;letter-spacing:1.2px;line-height:1}
+  .cart-head small{font-size:10.5px;opacity:.82;display:block;margin-top:3px;font-weight:500;letter-spacing:.2px}
+  .cart-head .chipwallet{position:relative;z-index:1;font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);padding:5px 9px;border-radius:999px}
+  .secband{height:5px;background:linear-gradient(90deg,#f5c04e,#ec6f9c,#7a8cf0,#4fd0c0,#f5c04e);background-size:200% 100%;animation:holo 6s linear infinite}
+  @keyframes holo{to{background-position:200% 0}}
+  .portaria{background:#f2f5fc;color:#3a4a86;font-size:10px;font-weight:600;text-align:center;padding:7px;border-bottom:1px solid var(--line);letter-spacing:.2px}
 
-  .exec-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:12px 14px}
-  .gtile{border:1px solid var(--line);border-radius:11px;padding:9px;display:flex;flex-direction:column;gap:5px;background:#fff;position:relative}
-  .gtile.bad{border-color:#f3c3bf;background:#fdf6f5}
-  .gtile.warn{border-color:#f0dcae;background:#fdfaf2}
-  .gtile.na{background:#fafbfe;border-style:dashed}
-  .gtile .dt.na{color:#c0c7d6;font-weight:700}
-  .gtile .gt{display:flex;align-items:center;gap:7px}
-  .gtile .gi{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:13px;color:#fff;flex:none;font-weight:800;font-size:9px}
-  .gtile .gn{font-size:10.5px;font-weight:700;line-height:1.1}
-  .gtile .gd{display:flex;justify-content:space-between;align-items:center;font-size:10.5px}
-  .gtile .gd .dt{font-weight:700}
-  .gtile .mini-pill{font-size:8.5px;font-weight:800;padding:2px 6px;border-radius:999px}
+  .front{display:flex;gap:13px;padding:16px 16px 14px}
+  .foto{width:76px;height:96px;border-radius:12px;flex:none;position:relative;overflow:hidden;
+    background:linear-gradient(160deg,#eef1ff,#dfe5fb);border:1px solid rgba(31,54,199,.15);display:grid;place-items:center}
+  .foto .fi{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--uni),#4460e6);color:#fff;
+    display:grid;place-items:center;font-size:18px;font-weight:800;box-shadow:0 4px 10px rgba(31,54,199,.3)}
+  .foto .flabel{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:8px;letter-spacing:1px;font-weight:700;color:#8a94b5;background:rgba(255,255,255,.6);padding:2px}
+  .fdata{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px}
+  .fname{font-size:16px;font-weight:800;letter-spacing:-.3px;line-height:1.1}
+  .fsub{font-size:11.5px;color:var(--mut);font-weight:600}
+  .fmeta{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .fmeta span{font-size:10px;font-weight:700;background:var(--bg);color:#48506a;padding:3px 8px;border-radius:999px;border:1px solid var(--line)}
+
+  .idrow{display:flex;gap:8px;padding:0 16px 14px}
+  .idcell{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:9px 11px}
+  .idcell small{font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;font-weight:800;display:block}
+  .idcell b{font-size:13px;font-weight:700;margin-top:2px;display:block}
+  .idcell b.ok{color:var(--ok)}.idcell b.warn{color:var(--warn)}.idcell b.bad{color:var(--bad)}
+
+  .exec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 16px 14px}
+  .gtile{border:1px solid var(--line);border-radius:13px;padding:10px;background:#fff;position:relative;transition:.15s;overflow:hidden}
+  .gtile .gt{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .gtile .gi{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:none}
+  .gtile .gn{font-size:11px;font-weight:700;line-height:1.12;color:var(--ink)}
+  .gtile .gd{display:flex;justify-content:space-between;align-items:center}
+  .gtile .dt{font-weight:800;font-size:12px;letter-spacing:-.2px}
+  .gtile .mini-pill{font-size:8.5px;font-weight:800;padding:3px 7px;border-radius:999px;letter-spacing:.2px}
   .mini-pill.ok{background:var(--ok-bg);color:var(--ok)}.mini-pill.warn{background:var(--warn-bg);color:var(--warn)}.mini-pill.bad{background:var(--bad-bg);color:var(--bad)}
+  .gtile.bad{border-color:#f1c4c0}.gtile.bad::before,.gtile.warn::before,.gtile.ok::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+  .gtile.ok::before{background:var(--ok)}.gtile.warn::before{background:var(--warn)}.gtile.bad::before{background:var(--bad)}
+  .gtile.na{background:repeating-linear-gradient(135deg,#fbfcfe,#fbfcfe 6px,#f6f8fc 6px,#f6f8fc 12px);border-style:dashed;border-color:#dfe4ef}
+  .gtile.na .gi{background:#eef1f7;color:#aeb6c9}
+  .gtile.na .gn{color:#9aa3b8}
+  .gtile .dt.na{color:#c0c7d6;font-weight:700;font-size:11px}
+  .gtile .lock{position:absolute;right:9px;top:9px;color:#c3cadb}
 
-  .sign-row{display:flex;gap:10px;padding:10px 15px;border-top:1px solid var(--line)}
-  .sign{flex:1;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
-  .sign small{font-size:9.5px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
-  .sign b{font-size:11.5px;display:flex;align-items:center;gap:5px;margin-top:2px}
-  .warnbar{background:#fdf3e3;color:#a05a00;font-size:10.5px;font-weight:700;text-align:center;padding:7px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .warnbar{background:linear-gradient(90deg,#fdf3e3,#fdf6ea);color:#a05a00;font-size:10.5px;font-weight:700;text-align:center;padding:8px;display:flex;align-items:center;justify-content:center;gap:6px;border-top:1px solid var(--line)}
+  .sign-row{display:flex;gap:9px;padding:12px 16px}
+  .sign{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 11px;display:flex;align-items:center;gap:9px;background:#fbfcfe}
+  .sign .sc{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none;color:#fff}
+  .sign small{font-size:9px;color:var(--mut);font-weight:800;text-transform:uppercase;letter-spacing:.4px;display:block}
+  .sign b{font-size:11.5px;font-weight:700;display:block;margin-top:1px}
 
-  /* liberador list */
-  .lib-list{padding:8px 14px 4px}
-  .lib-row{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line)}
+  /* liberador */
+  .lib-list{padding:6px 16px 8px}
+  .lib-row{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
   .lib-row:last-child{border:none}
-  .lib-ic{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;font-size:16px;background:var(--bg)}
+  .lib-ic{width:38px;height:38px;border-radius:11px;flex:none;display:grid;place-items:center;position:relative}
   .lib-nm{flex:1;min-width:0}
-  .lib-nm b{font-size:11.5px;font-weight:700;line-height:1.15;display:block}
-  .lib-nm small{font-size:10px;color:var(--mut)}
+  .lib-nm b{font-size:12px;font-weight:700;line-height:1.15;display:block}
+  .lib-nm small{font-size:10px;color:var(--mut);display:flex;align-items:center;gap:4px}
   .lib-until{text-align:right;flex:none}
-  .lib-until .dt{font-size:12px;font-weight:800}
+  .lib-until .dt{font-size:12.5px;font-weight:800;letter-spacing:-.2px}
   .lib-until .dt.ok{color:var(--ok)}.lib-until .dt.warn{color:var(--warn)}.lib-until .dt.bad{color:var(--bad)}
-  .lib-until .dt.na{color:var(--line);font-weight:700}
-  .visto{font-size:9px;font-weight:800;color:var(--ok);display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-top:2px}
-  .visto.na{color:#c7cdda}
+  .lib-until .dt.na{color:#c7cdda;font-weight:700}
+  .visto{font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-top:3px}
+  .visto.y{color:var(--ok)}.visto.na{color:#c7cdda}.visto.bad{color:var(--bad)}
 
   @media(max-width:560px){
     .kpis{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}
@@ -585,23 +611,51 @@ const EXEC_CAT=[
   {lb:'Esp. Conf. Supervisor',ic:'🕳️',kw:['nr33','confinado'],req:['supervisor']},
   {lb:'Esp. Conf. Entrante/Vigia',ic:'🕳️',kw:['nr33','confinado','vigia'],exc:['supervisor']},
 ];
-// ícone por treinamento (verso executor)
-function trIcon(n){n=n.toLowerCase();
-  if(n.includes('altura'))return '🧗';
-  if(n.includes('empilhad'))return '🏭';
-  if(n.includes('paleteira'))return '📦';
-  if(n.includes('talha'))return '⛓️';
-  if(n.includes('plataforma')||n.includes('pta'))return '🛗';
-  if(n.includes('confinado'))return '🕳️';
-  if(n.includes('nr10')||n.includes('sep')||n.includes('eletric'))return '⚡';
-  if(n.includes('nr12')||n.includes('máq')||n.includes('caldeira')||n.includes('nr 13'))return '⚙️';
-  if(n.includes('andaime')||n.includes('nr18'))return '🪜';
-  if(n.includes('munck')||n.includes('guindaste'))return '🏗️';
-  if(n.includes('rebocador')||n.includes('nr11'))return '🚜';
-  if(n.includes('direç'))return '🚗';
-  if(n.includes('quente'))return '🔥';
-  return '🎓';
+// ---- biblioteca de ícones SVG (traço, herda a cor) ----
+const ICONS={
+  bolt:'<path d="M13 2 5 13h5l-1 9 9-12h-5l1-8z"/>',
+  flame:'<path d="M12 3c3.2 3.6 5 6 5 8.8A5 5 0 0 1 7 12c0-1.2.5-2.3 1.6-3.3C10 10 12 7.2 12 3z"/><path d="M12 20a2.4 2.4 0 0 1-2.3-2.6c0-1.3 1-2 2.3-3.4 1.3 1.4 2.3 2.1 2.3 3.4A2.4 2.4 0 0 1 12 20z"/>',
+  altura:'<circle cx="13" cy="5" r="2"/><path d="M13 7v5l4 3M13 12l-3 3-2 5M4 21l5-2M20 8l-4 1"/>',
+  confinado:'<rect x="4" y="4" width="16" height="16" rx="2.5"/><circle cx="12" cy="10" r="1.9"/><path d="M8.8 16.5c.3-2 1.6-3 3.2-3s2.9 1 3.2 3"/>',
+  forklift:'<circle cx="6.5" cy="18" r="1.8"/><circle cx="15.5" cy="18" r="1.8"/><path d="M8.3 18h5.4M5 16.2V6h4.5l2.7 3.8V16M19 16V4M12.2 9.8H19M19 6h2.5"/>',
+  pallet:'<rect x="3" y="9" width="18" height="5.5" rx="1"/><path d="M6 14.5v3M12 14.5v3M18 14.5v3M3 20.5h18"/>',
+  hoist:'<path d="M6 3h9M9 3v4M9 7a3 3 0 1 0 .01 0M12 7l-1 2.5M12 12.5a1.6 1.6 0 1 1-2 0"/>',
+  lift:'<path d="M4 20.5h16M6.5 4.5h11v3.2h-11zM8 8l8 9M16 8l-8 9"/>',
+  crane:'<path d="M6 21V4h2M6 4h11l-3.2 3M8 8v13M8 8l9-4.2M14 7v4M14 12.6a1.4 1.4 0 1 0 .01 0"/>',
+  scaffold:'<rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 10h16M4 15h16M10 4v16M15 4v16"/>',
+  gear:'<circle cx="12" cy="12" r="3.1"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+  shovel:'<path d="M14.5 2.8 21.2 9.5l-3 3-6.7-6.7zM11.2 6 3 14.2V18h3.8l8.1-8.1"/>',
+  valve:'<path d="M3 12h6M15 12h6M9 12a3 3 0 0 1 6 0M12 9V5M9.5 5h5M12 15v4"/>',
+  wheel:'<circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="2.1"/><path d="M12 9.9V4.2M10.3 13.4 5.6 16.7M13.7 13.4l4.7 3.3"/>',
+  burst:'<path d="m12 2.5 2.1 5.2 5.4-1.6-2.9 4.9 4 3.9-5.6-.4-1.3 5.5-3.2-4.6-4.6 3.1 1.3-5.5-5-2.6 5.5-1z"/>',
+  shield:'<path d="M12 3.2 19 6v5c0 4.8-3 7.8-7 9.6C8 18.8 5 15.8 5 11V6z"/><path d="M9.5 12l1.8 1.8 3.4-3.6"/>',
+  cert:'<rect x="4.5" y="4" width="15" height="11" rx="1.5"/><path d="M8 8h8M8 11h5M12 15v4M12 19l-2.2 1.6M12 19l2.2 1.6"/>'
+};
+function iconKey(n){n=(n||'').toLowerCase();
+  if(n.includes('altura'))return 'altura';
+  if(n.includes('confinado')||n.includes('nr33'))return 'confinado';
+  if(n.includes('empilhad'))return 'forklift';
+  if(n.includes('paleteira'))return 'pallet';
+  if(n.includes('talha'))return 'hoist';
+  if(n.includes('plataforma')||n.includes('pta'))return 'lift';
+  if(n.includes('munck')||n.includes('guindaste')||n.includes('iça')||n.includes('icam'))return 'crane';
+  if(n.includes('andaime')||n.includes('nr18'))return 'scaffold';
+  if(n.includes('rebocador'))return 'wheel';
+  if(n.includes('direç'))return 'wheel';
+  if(n.includes('nr12')||n.includes('máq')||n.includes('maq')||n.includes('caldeira')||n.includes('nr 13')||n.includes('vasos')||n.includes('centerline')||n.includes('dfos'))return 'gear';
+  if(n.includes('nr10')||n.includes('sep')||n.includes('eletric'))return 'bolt';
+  if(n.includes('quente')||n.includes('inflam')||n.includes('nr20'))return 'flame';
+  if(n.includes('escava'))return 'shovel';
+  if(n.includes('line break'))return 'valve';
+  if(n.includes('dust')||n.includes('combust')||n.includes('explos'))return 'burst';
+  if(n.includes('psm'))return 'shield';
+  return 'cert';
 }
+// cor por categoria (sinalização de segurança)
+const CATCOL={bolt:'#d5352b',flame:'#e5531d',altura:'#1f6fd0',confinado:'#e08600',forklift:'#c07e08',pallet:'#c07e08',hoist:'#c07e08',lift:'#0e7490',crane:'#b45309',scaffold:'#2d7d46',gear:'#c8820a',shovel:'#8a5a2b',valve:'#6d28d9',wheel:'#1f6fd0',burst:'#b91c1c',shield:'#0b7d4e',cert:'#1f36c7'};
+function catColor(n){return CATCOL[iconKey(n)]||'#1f36c7';}
+function ico(name,size){return `<svg class="ic-svg" viewBox="0 0 24 24" width="${size||20}" height="${size||20}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||ICONS.cert}</svg>`;}
+function icoFor(n,size){return ico(iconKey(n),size);}
 
 function renderCard(){
   const e=curEmp, st=empStatus(e);
@@ -613,7 +667,7 @@ function renderCard(){
     <div class="badge-card">${curType==='exec'?execCard(e):libCard(e)}
       <div class="authseal">
         <div class="qr" id="qr-seal"></div>
-        <div><b>🛡️ Documento autenticado</b><small>Verificado em 27/08/2026 · código ${e.re}-UNI-${(parseInt(e.re)%9973)}<br>Substitui a carteirinha física. Vale só com selo digital ativo.</small></div>
+        <div><b>${ico('shield',15)} Documento autenticado</b><small>Verificado em 27/08/2026 · nº ${e.re}-UNI-${(parseInt(e.re)%9973)}<br>Substitui a carteirinha física. Vale só com selo digital ativo.</small></div>
       </div>
     </div>`;
   qr(document.getElementById('qr-seal'), e.re+curType);
@@ -625,64 +679,79 @@ function execCard(e){
   const [sc,sl]=stMap[st];
   const aso=asoDate(e), asoS=daysTo(aso)<0?'bad':(daysTo(aso)<=30?'warn':'ok');
   const ig=integ(e), igS=daysTo(ig)<0?'bad':(daysTo(ig)<=30?'warn':'ok');
+  const tint=(c)=>`background:${c}14;color:${c}`;
   const used=new Set();
+  const tileFilled=(name,label,t)=>{const s=trStatus(t),d=daysTo(t.vencimento),c=catColor(name);
+    return `<div class="gtile ${s}"><div class="gt"><div class="gi" style="${tint(c)}">${icoFor(name,18)}</div><div class="gn">${label}</div></div>
+      <div class="gd"><span class="dt" style="color:var(--${s})">${fmt(t.vencimento)}</span><span class="mini-pill ${s}">${s==='bad'?'vencido':s==='warn'?d+'d':'válido'}</span></div></div>`;};
   const tiles=EXEC_CAT.map(c=>{
     const t=findTr(e,c.kw,c.req,c.exc);
-    if(t){used.add(t.nome);const s=trStatus(t),d=daysTo(t.vencimento);
-      return `<div class="gtile ${s}"><div class="gt"><div class="gi" style="background:${color(c.lb)}">${c.ic}</div><div class="gn">${c.lb}</div></div>
-        <div class="gd"><span class="dt" style="color:var(--${s})">${fmt(t.vencimento)}</span><span class="mini-pill ${s}">${s==='bad'?'venc':s==='warn'?d+'d':'ok'}</span></div></div>`;}
-    return `<div class="gtile na"><div class="gt"><div class="gi" style="background:#c7cdda">${c.ic}</div><div class="gn" style="color:#9aa3b5">${c.lb}</div></div>
-      <div class="gd"><span class="dt na">— / — / —</span></div></div>`;}).join('');
+    if(t){used.add(t.nome);return tileFilled(c.lb,c.lb,t);}
+    return `<div class="gtile na"><span class="lock">${ico('cert',13)}</span><div class="gt"><div class="gi">${icoFor(c.lb,18)}</div><div class="gn">${c.lb}</div></div>
+      <div class="gd"><span class="dt na">não habilitado</span></div></div>`;}).join('');
   const outros=e.trainings.filter(t=>!used.has(t.nome));
-  const outrosHtml=outros.length?'<div class="tr-sec" style="padding:10px 14px 0;margin:0">Outros treinamentos</div><div class="exec-grid">'+
-    outros.map(t=>{const s=trStatus(t),d=daysTo(t.vencimento);
-      return `<div class="gtile ${s}"><div class="gt"><div class="gi" style="background:${color(t.nome)};font-size:11px">${trIcon(t.nome)}</div><div class="gn">${t.nome}</div></div>
-        <div class="gd"><span class="dt" style="color:var(--${s})">${fmt(t.vencimento)}</span><span class="mini-pill ${s}">${s==='bad'?'venc':s==='warn'?d+'d':'ok'}</span></div></div>`;}).join('')+'</div>':'';
+  const outrosHtml=outros.length?'<div class="tr-sec" style="padding:12px 16px 2px;margin:0">Outros treinamentos</div><div class="exec-grid">'+
+    outros.map(t=>tileFilled(t.nome,t.nome,t)).join('')+'</div>':'';
   return `
-    <div class="cart-head"><div class="ulg">U</div><div><b>UNILEVER</b><small>Carteirinha de Treinamentos</small></div></div>
-    <div class="portaria">em conformidade com a portaria 3214 de 08/06/78</div>
+    <div class="cart-head">
+      <div class="ulg">U</div>
+      <div class="ht"><b>UNILEVER</b><small>Carteirinha de Treinamentos</small></div>
+      <span class="chipwallet">Executor</span>
+    </div>
+    <div class="secband"></div>
+    <div class="portaria">Em conformidade com a Portaria 3.214 de 08/06/1978</div>
     <div class="front">
-      <div class="foto">${initials(e.nome)}<small>FOTO</small></div>
+      <div class="foto"><div class="fi">${initials(e.nome)}</div><div class="flabel">FOTO</div></div>
       <div class="fdata">
-        <div class="frow"><span class="k">Nome</span><span class="v hand">${e.nome}</span></div>
-        <div class="frow"><span class="k">Empresa</span><span class="v hand">Unilever</span></div>
-        <div class="frow"><span class="k">Função</span><span class="v hand">${funcao(e)}</span></div>
-        <div class="frow"><span class="k">Renov. integração</span><span class="v hand ${igS}">${igS==='bad'?'VENCIDA':fmt(ig)}</span></div>
-        <div class="frow"><span class="k">Renov. ASO</span><span class="v hand ${asoS}">${asoS==='bad'?'VENCIDO':fmt(aso)}</span></div>
+        <div class="fname">${e.nome}</div>
+        <div class="fsub">${funcao(e)} · Unilever</div>
+        <div class="fmeta"><span>RE ${e.re}</span><span>${e.area}</span><span>${e.turno}</span></div>
       </div>
     </div>
+    <div class="idrow">
+      <div class="idcell"><small>Renov. integração</small><b class="${igS}">${igS==='bad'?'Vencida':fmt(ig)}</b></div>
+      <div class="idcell"><small>Renov. ASO</small><b class="${asoS}">${asoS==='bad'?'Vencido':fmt(aso)}</b></div>
+    </div>
     <div class="status-strip ${sc}"><span class="dot"></span>${sl}</div>
-    <div class="tr-sec" style="padding:10px 14px 0;margin:0">Validade dos treinamentos</div>
+    <div class="tr-sec" style="padding:12px 16px 2px;margin:0">Validade dos treinamentos</div>
     <div class="exec-grid">${tiles}</div>
     ${outrosHtml}
-    <div class="warnbar">⚠ Não opere equipamentos com habilitação vencida</div>
+    <div class="warnbar">${ico('flame',14)} Não opere equipamentos com habilitação vencida</div>
     <div class="sign-row">
-      <div class="sign"><small>Visto SHE</small><b style="color:var(--ok)">✓ Segurança do Trabalho</b></div>
-      <div class="sign"><small>Visto Saúde</small><b style="color:var(--${asoS})">${asoS==='bad'?'✕ ASO vencido':'✓ ASO válido'}</b></div>
+      <div class="sign"><div class="sc" style="background:var(--ok)">${ico('shield',16)}</div><div><small>Visto SHE</small><b style="color:var(--ok)">Segurança ✓</b></div></div>
+      <div class="sign"><div class="sc" style="background:var(--${asoS==='bad'?'bad':'ok'})">${ico('cert',16)}</div><div><small>Visto Saúde</small><b style="color:var(--${asoS==='bad'?'bad':'ok'})">${asoS==='bad'?'ASO vencido':'ASO válido'}</b></div></div>
     </div>`;
 }
 
 function libCard(e){
+  const tint=(c)=>`background:${c}14;color:${c}`;
   const rows=LIB.map(w=>{
+    const key=iconKey(w.kw[0].includes('nr')?w.nm:w.nm), c=catColor(w.nm);
     const t=findTr(e,w.kw,w.req,w.exc);
-    if(!t) return `<div class="lib-row"><div class="lib-ic" style="opacity:.4">${w.ic}</div>
-      <div class="lib-nm"><b>${w.nm}</b><small>não autorizado</small></div>
-      <div class="lib-until"><div class="dt na">— / — / —</div><div class="visto na">Visto SHE</div></div></div>`;
+    if(!t) return `<div class="lib-row"><div class="lib-ic" style="background:#f2f4f8;color:#c0c7d6">${icoFor(w.nm,18)}</div>
+      <div class="lib-nm"><b style="color:#9aa3b8">${w.nm}</b><small>não autorizado</small></div>
+      <div class="lib-until"><div class="dt na">— / — / —</div><div class="visto na">Sem visto</div></div></div>`;
     const s=trStatus(t);
-    return `<div class="lib-row"><div class="lib-ic">${w.ic}</div>
-      <div class="lib-nm"><b>${w.nm}</b><small>habilitado em ${fmt(t.data)}</small></div>
-      <div class="lib-until"><div class="dt ${s}">Até ${fmt(t.vencimento)}</div>
-      <div class="visto ${s==='bad'?'na':''}">${s==='bad'?'⚠ revalidar':'✓ Visto SHE'}</div></div></div>`;
+    return `<div class="lib-row"><div class="lib-ic" style="${tint(c)}">${icoFor(w.nm,18)}</div>
+      <div class="lib-nm"><b>${w.nm}</b><small>${ico('cert',11)} habilitado em ${fmt(t.data)}</small></div>
+      <div class="lib-until"><div class="dt ${s}">${s==='bad'?'Vencido':'Até '+fmt(t.vencimento)}</div>
+      <div class="visto ${s==='bad'?'bad':'y'}">${s==='bad'?'⚠ revalidar':'✓ Visto SHE'}</div></div></div>`;
   }).join('');
   const auth=LIB.filter(w=>{const t=findTr(e,w.kw,w.req,w.exc);return t&&trStatus(t)!=='bad';}).length;
+  const pct=Math.round(auth/LIB.length*100);
   return `
-    <div class="cart-head lib"><div class="ulg">U</div><div><b>AUTORIZAÇÃO</b><small>Trabalhos especializados · Liberador</small></div></div>
-    <div class="front" style="padding-bottom:10px">
-      <div class="foto" style="width:52px;height:52px;font-size:20px;border-radius:12px">${initials(e.nome)}<small style="display:none"></small></div>
-      <div class="fdata" style="display:flex;flex-direction:column;justify-content:center">
-        <div style="font-size:14px;font-weight:800">${e.nome}</div>
-        <div style="font-size:11.5px;color:var(--mut);margin-top:2px">RE ${e.re} · ${e.area} · ${e.turno}</div>
-        <div style="font-size:11px;font-weight:700;color:var(--uni);margin-top:4px">${auth} de ${LIB.length} atividades autorizadas</div>
+    <div class="cart-head lib">
+      <div class="ulg">U</div>
+      <div class="ht"><b>AUTORIZAÇÃO</b><small>Trabalhos especializados</small></div>
+      <span class="chipwallet">Liberador</span>
+    </div>
+    <div class="secband"></div>
+    <div class="front" style="padding-bottom:12px">
+      <div class="foto" style="width:54px;height:54px;border-radius:14px"><div class="fi" style="width:36px;height:36px;font-size:15px;background:linear-gradient(135deg,#0b7d4e,#12a566)">${initials(e.nome)}</div></div>
+      <div class="fdata">
+        <div class="fname" style="font-size:15px">${e.nome}</div>
+        <div class="fmeta"><span>RE ${e.re}</span><span>${e.area}</span><span>${e.turno}</span></div>
+        <div style="font-size:11px;font-weight:800;color:#0b7d4e;margin-top:7px">${auth} de ${LIB.length} atividades autorizadas · ${pct}%</div>
       </div>
     </div>
     <div class="lib-list">${rows}</div>`;
