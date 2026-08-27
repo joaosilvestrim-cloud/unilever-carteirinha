@@ -27,9 +27,9 @@
   ::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:#d6dbe6;border-radius:9px}
 
   /* ---------- brand ---------- */
-  .brand-mark{position:relative;display:inline-grid;place-items:center;background:#fff;border-radius:26%;box-shadow:0 2px 6px rgba(16,24,40,.12);flex:none}
-  .brand-mark img{position:absolute;inset:12%;width:76%;height:76%;object-fit:contain}
-  .brand-mark .fb{width:66%;height:66%;color:var(--uni)}
+  .brand-mark{position:relative;display:inline-grid;place-items:center;background:#fff;border-radius:24%;box-shadow:0 2px 6px rgba(16,24,40,.12);flex:none;overflow:hidden}
+  .brand-mark img{position:absolute;inset:6%;width:88%;height:88%;object-fit:contain}
+  .brand-mark .fb{width:64%;height:64%;color:var(--uni)}
   .wordmark{font-weight:800;letter-spacing:-.3px}
 
   /* ================= LOGIN ================= */
@@ -398,7 +398,7 @@ function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replac
 
 /* ---------- brand + icons ---------- */
 function brand(px,cls){return `<span class="brand-mark ${cls||''}" style="width:${px}px;height:${px}px">
-  <img src="unilever.png" alt="Unilever" onerror="this.remove()">
+  <img src="unilever.png" alt="Unilever" onload="var s=this.parentNode.querySelector('.fb');if(s)s.remove()" onerror="this.remove()">
   <svg class="fb" viewBox="0 0 40 46" fill="none"><path d="M8 4h7v22a5 5 0 0 0 10 0V4h7v22a12 12 0 0 1-24 0V4z" fill="currentColor"/></svg></span>`;}
 
 const ICONS={
