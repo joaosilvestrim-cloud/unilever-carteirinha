@@ -384,7 +384,8 @@ const state={screen:'login',route:'dash',param:null,type:'exec',curEmp:null,q:''
 
 /* ---------- helpers ---------- */
 const daysTo=d=>d?Math.round((new Date(d+'T00:00:00')-TODAY)/DAY):null;
-const trStatus=t=>{const d=daysTo(t.vencimento);return d===null?'ok':d<0?'bad':d<=30?'warn':'ok';};
+const ALERT_DAYS=60;
+const trStatus=t=>{const d=daysTo(t.vencimento);return d===null?'ok':d<0?'bad':d<=ALERT_DAYS?'warn':'ok';};
 function empStatus(e){let s='ok';for(const t of e.trainings){const x=trStatus(t);if(x==='bad')return 'bad';if(x==='warn')s='warn';}return s;}
 function fmt(d){if(!d)return '—';const[y,m,dd]=d.split('-');return dd+'/'+m+'/'+y;}
 function initials(n){const p=n.trim().split(/\s+/);return((p[0]||'')[0]||'')+((p[p.length-1]||'')[0]||'');}
@@ -527,8 +528,8 @@ function execCard(e){
   const st=empStatus(e);
   const stMap={ok:['ok','✓ Apto para as atividades'],warn:['warn','⚠ Atenção: treinamento vencendo'],bad:['bad','✕ Inapto: habilitação vencida']};
   const [sc,sl]=stMap[st];
-  const aso=asoDate(e),asoS=daysTo(aso)<0?'bad':(daysTo(aso)<=30?'warn':'ok');
-  const ig=integ(e),igS=daysTo(ig)<0?'bad':(daysTo(ig)<=30?'warn':'ok');
+  const aso=asoDate(e),asoS=daysTo(aso)<0?'bad':(daysTo(aso)<=ALERT_DAYS?'warn':'ok');
+  const ig=integ(e),igS=daysTo(ig)<0?'bad':(daysTo(ig)<=ALERT_DAYS?'warn':'ok');
   const tint=c=>`background:${c}14;color:${c}`;
   const filled=(name,label,t)=>{const s=trStatus(t),d=daysTo(t.vencimento),c=catColor(name);
     return `<div class="gtile ${s}"><div class="gt"><div class="gi" style="${tint(c)}">${icoFor(name,18)}</div><div class="gn">${esc(label)}</div></div>
@@ -565,7 +566,7 @@ function execCard(e){
 function libCard(e){
   const tint=c=>`background:${c}14;color:${c}`;
   const rows=LIB.map(w=>{const c=catColor(w.nm),t=findTr(e,w.kw,w.req,w.exc);
-    if(!t)return `<div class="lib-row"><div class="lib-ic" style="background:#f2f4f8;color:#c0c7d6">${icoFor(w.nm,18)}</div><div class="lib-nm"><b style="color:#9aa3b8">${w.nm}</b><small>não autorizado</small></div><div class="lib-until"><div class="dt na">— / — / —</div><div class="visto na">Sem visto</div></div></div>`;
+    if(!t)return `<div class="lib-row"><div class="lib-ic" style="background:#f2f4f8;color:#c0c7d6">${icoFor(w.nm,18)}</div><div class="lib-nm"><b style="color:#9aa3b8">${w.nm}</b><small>sem habilitação</small></div><div class="lib-until"><div class="dt na" style="font-size:11px">Não autorizado</div><div class="visto na">Sem visto</div></div></div>`;
     const s=trStatus(t);
     return `<div class="lib-row"><div class="lib-ic" style="${tint(c)}">${icoFor(w.nm,18)}</div><div class="lib-nm"><b>${w.nm}</b><small>${ico('cert',11)} habilitado em ${fmt(t.data)}</small></div><div class="lib-until"><div class="dt ${s}">${s==='bad'?'Vencido':'Até '+fmt(t.vencimento)}</div><div class="visto ${s==='bad'?'bad':'y'}">${s==='bad'?'⚠ revalidar':'✓ Visto SHE'}</div></div></div>`;}).join('');
   const auth=LIB.filter(w=>{const t=findTr(e,w.kw,w.req,w.exc);return t&&trStatus(t)!=='bad';}).length;
@@ -672,7 +673,7 @@ const NAV=[
   {k:'audit',lb:'Auditoria',ic:'audit'},
   {k:'config',lb:'Configurações',ic:'gearui'},
 ];
-function expiringCount(){let n=0;DATA.forEach(e=>e.trainings.forEach(t=>{const d=daysTo(t.vencimento);if(d!==null&&d>=0&&d<=30)n++;}));return n;}
+function expiringCount(){let n=0;DATA.forEach(e=>e.trainings.forEach(t=>{const d=daysTo(t.vencimento);if(d!==null&&d>=0&&d<=ALERT_DAYS)n++;}));return n;}
 function overdueCount(){let n=0;DATA.forEach(e=>e.trainings.forEach(t=>{if(trStatus(t)==='bad')n++;}));return n;}
 function appShell(){
   const alerts=expiringCount()+overdueCount();
@@ -731,7 +732,7 @@ function viewDash(){
   const cards=[
     ['users',k.people.toLocaleString('pt-BR'),'Colaboradores','var(--uni)','var(--uni-l)',comp+'% conformidade','var(--ok-bg)','var(--ok)'],
     ['cert',k.valid.toLocaleString('pt-BR'),'Treinamentos válidos','var(--ok)','var(--ok-bg)','de '+k.total,'var(--bg)','var(--mut)'],
-    ['alert',k.warn,'Vencendo em 30 dias','var(--warn)','var(--warn-bg)','requer ação','var(--warn-bg)','var(--warn)'],
+    ['alert',k.warn,'Vencendo em 60 dias','var(--warn)','var(--warn-bg)','requer ação','var(--warn-bg)','var(--warn)'],
     ['x',k.bad,'Vencidos','var(--bad)','var(--bad-bg)',k.empBad+' pessoas','var(--bad-bg)','var(--bad)'],
   ];
   return `<div class="ph"><div><h1>Painel de conformidade</h1><p>Situação dos treinamentos legais e mandatórios da fábrica.</p></div>
@@ -739,7 +740,7 @@ function viewDash(){
   <div class="kpis">${cards.map(c=>`<div class="kpi"><div class="kic" style="background:${c[4]};color:${c[3]}">${ui(c[0],21)}</div><h3>${c[1]}</h3><small>${c[2]}</small><span class="trend" style="background:${c[6]};color:${c[7]}">${c[5]}</span></div>`).join('')}</div>
   <div class="grid2">
     <div class="panel"><div class="pt"><b>Conformidade por área</b><small>% de treinamentos válidos</small></div><div class="pb">${barsByArea()}</div></div>
-    <div class="panel"><div class="pt"><b>Vence em 30 dias</b><span class="more" onclick="route('alertas')">Ver todos</span></div><div class="pb">${expiringList(6)}</div></div>
+    <div class="panel"><div class="pt"><b>Vence em 60 dias</b><span class="more" onclick="route('alertas')">Ver todos</span></div><div class="pb">${expiringList(6)}</div></div>
   </div>
   <div class="panel"><div class="pt"><b>Distribuição por treinamento</b><small>colaboradores habilitados</small></div><div class="pb">${barsByTrain()}</div></div>`;
 }
@@ -749,8 +750,8 @@ function barsByArea(){const m={};DATA.forEach(e=>{if(e.area==='—')return;m[e.a
 function barsByTrain(){const m={};DATA.forEach(e=>e.trainings.forEach(t=>m[t.nome]=(m[t.nome]||0)+1));
   const arr=Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,8);const max=arr[0][1];
   return arr.map(([n,c])=>`<div class="bar"><div class="lb" style="width:220px" title="${esc(n)}">${esc(n)}</div><div class="track"><div class="fill" style="width:${Math.round(c/max*100)}%;background:${catColor(n)}"></div></div><div class="vv">${c}</div></div>`).join('');}
-function expiringList(lim){const rows=[];DATA.forEach(e=>e.trainings.forEach(t=>{const d=daysTo(t.vencimento);if(d!==null&&d>=0&&d<=30)rows.push({e,t,d});}));rows.sort((a,b)=>a.d-b.d);
-  if(!rows.length)return '<p style="color:var(--mut);font-size:13px">Nada vencendo nos próximos 30 dias. 🎉</p>';
+function expiringList(lim){const rows=[];DATA.forEach(e=>e.trainings.forEach(t=>{const d=daysTo(t.vencimento);if(d!==null&&d>=0&&d<=ALERT_DAYS)rows.push({e,t,d});}));rows.sort((a,b)=>a.d-b.d);
+  if(!rows.length)return '<p style="color:var(--mut);font-size:13px">Nada vencendo nos próximos 60 dias. 🎉</p>';
   return rows.slice(0,lim).map(r=>`<div class="lrow" onclick="route('colab','${r.e.re}')"><div class="av" style="background:${color(r.e.nome)}">${initials(r.e.nome)}</div><div style="flex:1"><b>${esc(r.e.nome)}</b><small>${esc(r.t.nome)}</small></div><span class="mini-pill warn">${r.d}d</span></div>`).join('');}
 
 function viewColabs(){
@@ -763,6 +764,7 @@ function viewColabs(){
     <select class="fsel" id="f-area" onchange="renderColabTable()"><option value="">Todas as áreas</option>${areas.map(a=>`<option>${a}</option>`).join('')}</select>
     <select class="fsel" id="f-turno" onchange="renderColabTable()"><option value="">Todos os turnos</option>${turnos.map(t=>`<option>${t}</option>`).join('')}</select>
     <select class="fsel" id="f-status" onchange="renderColabTable()"><option value="">Todos os status</option><option value="bad">Com vencidos</option><option value="warn">Vencendo</option><option value="ok">Em dia</option></select>
+    <select class="fsel" id="f-vinculo" onchange="renderColabTable()"><option value="ativo">Ativos</option><option value="inativo">Inativos</option><option value="">Todos os vínculos</option></select>
   </div>
   <div class="tbl-wrap"><div class="tbl-scroll"><table>
     <thead><tr><th>Colaborador</th><th>Área</th><th>Turno</th><th>Gestor</th><th>Treinos</th><th>Situação</th><th></th></tr></thead>
@@ -772,16 +774,28 @@ function viewColabs(){
 function renderColabTable(){
   const q=(document.getElementById('tbl-search')?.value||state.q||'').toLowerCase();
   const fa=document.getElementById('f-area')?.value||'',ft=document.getElementById('f-turno')?.value||'',fs=document.getElementById('f-status')?.value||'';
-  let rows=DATA.filter(e=>{if(q&&!(e.nome.toLowerCase().includes(q)||e.re.includes(q)))return false;if(fa&&e.area!==fa)return false;if(ft&&e.turno!==ft)return false;if(fs&&empStatus(e)!==fs)return false;return true;});
+  const fv=document.getElementById('f-vinculo')?document.getElementById('f-vinculo').value:'ativo';
+  let rows=DATA.filter(e=>{if(q&&!(e.nome.toLowerCase().includes(q)||e.re.includes(q)))return false;if(fa&&e.area!==fa)return false;if(ft&&e.turno!==ft)return false;if(fs&&empStatus(e)!==fs)return false;
+    if(fv==='ativo'&&e.ativo===false)return false;if(fv==='inativo'&&e.ativo!==false)return false;return true;});
   const stTxt={ok:['ok','Em dia'],warn:['warn','Vencendo'],bad:['bad','Inapto']};
   const tb=document.getElementById('tbody');
-  tb.innerHTML=rows.slice(0,150).map(e=>{const st=empStatus(e),[sc,sl]=stTxt[st];
-    return `<tr onclick="route('colab','${e.re}')"><td><div class="cell-nm"><div class="av" style="background:${color(e.nome)}">${initials(e.nome)}</div><div><b>${esc(e.nome)}</b><br><small>RE ${e.re}</small></div></div></td>
+  tb.innerHTML=rows.slice(0,150).map(e=>{const st=empStatus(e),[sc,sl]=stTxt[st];const inativo=e.ativo===false;
+    return `<tr onclick="route('colab','${e.re}')" style="${inativo?'opacity:.6':''}"><td><div class="cell-nm"><div class="av" style="background:${inativo?'#8a93a6':color(e.nome)}">${initials(e.nome)}</div><div><b>${esc(e.nome)}</b>${inativo?' <span class="tag" style="background:#eef1f6;font-size:9px">Inativo</span>':''}<br><small>RE ${e.re}</small></div></div></td>
       <td><span class="tag">${esc(e.area)}</span></td><td>${e.turno}</td><td style="color:var(--mut)">${esc((e.gestor||'—').split(',')[0])}</td><td>${e.trainings.length}</td>
-      <td><span class="st ${sc}"><span class="d"></span>${sl}</span></td><td style="text-align:right;color:var(--mut2)">${ui('chev',16)}</td></tr>`;}).join('');
+      <td>${inativo?'<span class="st" style="color:var(--mut)"><span class="d" style="background:var(--mut2)"></span>Desligado</span>':`<span class="st ${sc}"><span class="d"></span>${sl}</span>`}</td><td style="text-align:right;color:var(--mut2)">${ui('chev',16)}</td></tr>`;}).join('');
   document.getElementById('tbl-info').textContent=`${rows.length} colaboradores`+(rows.length>150?' (mostrando 150)':'');
   const cc=document.getElementById('colab-count');if(cc)cc.textContent=`${DATA.length} na base · ${rows.length} no filtro`;
 }
+function toggleColabAtivo(re){const e=DATA.find(x=>x.re===re);if(!e)return;
+  if(e.ativo!==false){ // inativar -> pede confirmação
+    showModal(`<div class="mh">${ui('users',20)}<b>Inativar colaborador</b><button class="x" onclick="closeAll()">${ui('x',16)}</button></div>
+      <div class="mb"><p style="font-size:14px;line-height:1.6">Inativar <b>${esc(e.nome)}</b> (RE ${e.re})?</p>
+      <p style="font-size:13px;color:var(--mut);margin-top:10px">O colaborador sai das listas ativas e não aparece na consulta por RE, mas o histórico é preservado para auditoria. Nada é apagado da base.</p>
+      <div style="display:flex;gap:10px;margin-top:20px"><button class="btn" style="flex:1;justify-content:center" onclick="closeAll()">Cancelar</button>
+        <button class="btn" style="flex:1;justify-content:center;background:var(--warn);color:#fff;border-color:var(--warn)" onclick="doToggleAtivo('${re}')">Inativar</button></div></div>`);
+  } else { doToggleAtivo(re); }
+}
+function doToggleAtivo(re){const e=DATA.find(x=>x.re===re);e.ativo=e.ativo===false;closeAll();renderRoute();toast(e.ativo?'Colaborador reativado':'Colaborador inativado');}
 function viewColab(){
   const e=DATA.find(x=>x.re===state.param);if(!e)return viewColabs();
   const st=empStatus(e),stMap={ok:['ok','Apto'],warn:['warn','Atenção'],bad:['bad','Inapto']};
@@ -811,8 +825,9 @@ function viewColab(){
             <td><span class="st ${stx[s][0]}"><span class="d"></span>${stx[s][1]}</span></td></tr>`;}).join('')}</tbody></table></div></div>
     </div>
     <div class="cardcol">
-      <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn sm" style="flex:1;justify-content:center" onclick="alertMock('reemitir carteirinha')">${ui('refresh',15)} Reemitir</button>
+      <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn sm" style="flex:1;justify-content:center" onclick="alertMock('reemitir carteirinha')">${ui('refresh',15)} Reemitir</button>
         <button class="btn sm" style="flex:1;justify-content:center" onclick="alertMock('enviar por WhatsApp')">${ui('idcard',15)} Enviar link</button></div>
+      <button class="btn sm" style="width:100%;justify-content:center;margin-bottom:12px;${e.ativo===false?'':'color:var(--bad);border-color:#f1c4c0'}" onclick="toggleColabAtivo('${e.re}')">${e.ativo===false?ui('refresh',15)+' Reativar colaborador':ui('logout',15)+' Inativar (desligamento)'}</button>
       ${carteirinhaHTML(e)}
     </div>
   </div>`;
@@ -927,7 +942,7 @@ function viewAlertas(){
   const rows=[];DATA.forEach(e=>e.trainings.forEach(t=>{const s=trStatus(t),d=daysTo(t.vencimento);if(s==='bad'||s==='warn')rows.push({e,t,s,d});}));
   rows.sort((a,b)=>(a.d??-9999)-(b.d??-9999));
   const bad=rows.filter(r=>r.s==='bad').length,warn=rows.filter(r=>r.s==='warn').length;
-  return `<div class="ph"><div><h1>Vencimentos</h1><p>${bad} habilitações vencidas · ${warn} vencendo em 30 dias.</p></div>
+  return `<div class="ph"><div><h1>Vencimentos</h1><p>${bad} habilitações vencidas · ${warn} vencendo em 60 dias.</p></div>
     <div class="sp"><button class="btn" onclick="alertMock('notificar gestores')">${ui('bell',16)} Notificar gestores</button><button class="btn pri" onclick="alertMock('exportar plano de reciclagem')">${ui('download',16)} Exportar</button></div></div>
   <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr><th>Colaborador</th><th>Treinamento</th><th>Área</th><th>Vencimento</th><th>Situação</th><th></th></tr></thead>
     <tbody>${rows.slice(0,150).map(r=>{const stx=r.s==='bad'?['bad','Vencido']:['warn',r.d+' dias'];
@@ -971,7 +986,7 @@ function viewConfig(){
     <div class="lrow"><div class="av" style="background:var(--mut)">CO</div><div style="flex:1"><b>Colaborador</b><small>Consulta a própria carteirinha por RE / QR (sem login).</small></div><span class="tag">${DATA.length} pessoas</span></div>
   </div></div>
   <div class="panel" style="margin-top:16px"><div class="pt"><b>Regra de vencimento</b></div><div class="pb" style="color:var(--mut);font-size:13.5px;line-height:1.8">
-    Aviso de <b style="color:var(--warn)">vencimento próximo</b> disparado <b style="color:var(--ink)">30 dias</b> antes.<br>
+    Aviso de <b style="color:var(--warn)">vencimento próximo</b> disparado <b style="color:var(--ink)">60 dias</b> antes.<br>
     Data de vencimento = <b style="color:var(--ink)">Data de realização + Validade (dias)</b>.<br>
     Colaborador com qualquer treinamento vencido fica <b style="color:var(--bad)">Inapto</b> para a atividade correspondente.
   </div></div>`;
@@ -980,7 +995,7 @@ function viewConfig(){
 /* ---- notif / modal ---- */
 function toggleNotif(){const n=document.getElementById('notif');const open=n.classList.contains('on');
   if(open){n.classList.remove('on');return;}
-  const rows=[];DATA.forEach(e=>e.trainings.forEach(t=>{const d=daysTo(t.vencimento);if(d!==null&&d<=30)rows.push({e,t,d});}));
+  const rows=[];DATA.forEach(e=>e.trainings.forEach(t=>{const d=daysTo(t.vencimento);if(d!==null&&d<=ALERT_DAYS)rows.push({e,t,d});}));
   rows.sort((a,b)=>a.d-b.d);
   n.innerHTML=`<div class="pt" style="padding:14px 16px;border-bottom:1px solid var(--line2);display:flex;align-items:center"><b style="font-size:15px">Vencimentos</b><button class="btn sm" style="margin-left:auto" onclick="route('alertas');toggleNotif()">Ver todos</button></div>
     <div style="max-height:360px;overflow:auto;padding:6px 14px">${rows.slice(0,8).map(r=>`<div class="lrow" onclick="route('colab','${r.e.re}');toggleNotif()"><div class="av" style="background:${r.d<0?'var(--bad)':'var(--warn)'}">${r.d<0?'!':r.d}</div><div style="flex:1"><b>${esc(r.e.nome)}</b><small>${esc(r.t.nome)} · ${r.d<0?'vencido':'vence em '+r.d+'d'}</small></div></div>`).join('')}</div>`;
