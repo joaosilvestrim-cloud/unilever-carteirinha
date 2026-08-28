@@ -608,13 +608,13 @@ function loginView(){
     <div class="panel">
       <div class="login-box">
         <h2>Entrar no sistema</h2>
-        <div class="sub">Acesso para equipe de SHE, Saúde e administração.</div>
-        <button class="btn-sso" onclick="doLogin()">${brand(26)} Entrar com conta Unilever</button>
-        <div class="orsep">ou com e-mail corporativo</div>
-        <div class="fld"><label>E-mail</label><input type="email" placeholder="nome@unilever.com" value="ana.gomes@unilever.com"></div>
-        <div class="fld"><label>Senha</label><input type="password" placeholder="••••••••" value="········"></div>
+        <div class="sub">Acesso da equipe de Treinamentos, SHE e Saúde.</div>
+        <div class="fld"><label>E-mail</label><input type="email" placeholder="nome@empresa.com" value="ana.gomes@unilever.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="fld"><label>Senha</label><input type="password" placeholder="••••••••" value="········" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div style="text-align:right;margin:-4px 0 14px"><a onclick="alertMock('recuperação de senha por e-mail')" style="font-size:12.5px;color:var(--uni);font-weight:700">Esqueci minha senha</a></div>
         <button class="btn-primary" onclick="doLogin()">Entrar</button>
-        <div class="login-alt">É colaborador? <a onclick="openConsult()">Consultar minha carteirinha →</a></div>
+        <div class="login-alt">Usuários da equipe são criados pelo administrador dentro da plataforma.</div>
+        <div class="login-alt" style="margin-top:8px">É colaborador? <a onclick="openConsult()">Consultar minha carteirinha →</a></div>
       </div>
     </div>
   </div>`;
@@ -718,6 +718,7 @@ function renderRoute(){const c=document.getElementById('content');if(!c)return;
   if(state.route==='colabs')renderColabTable();
   if(state.route==='treinos')renderTreinoGrid();
   if(state.route==='cards')renderCardPick();
+  if(state.route==='config')renderUserTable();
   drawQRs();}
 function toggleSb(v){document.body.classList.toggle('sb-open',v);}
 function topSearch(v){state.q=v;if(state.route!=='colabs')route('colabs');else renderColabTable();
@@ -977,13 +978,28 @@ function viewAudit(){
     <div class="tfoot"><span>Mostrando atividade recente</span><span>Retenção: 5 anos</span></div></div>`;
 }
 
-function viewConfig(){
-  return `<div class="ph"><div><h1>Configurações</h1><p>Perfis de acesso e regras da carteirinha.</p></div></div>
-  <div class="panel"><div class="pt"><b>Perfis de acesso</b></div><div class="pb">
-    <div class="lrow"><div class="av" style="background:var(--uni)">AG</div><div style="flex:1"><b>Administrador</b><small>Gerencia treinamentos, colaboradores e integrações.</small></div><span class="tag">1 usuário</span></div>
-    <div class="lrow"><div class="av" style="background:var(--ok)">SG</div><div style="flex:1"><b>Segurança do Trabalho (SHE)</b><small>Emite e valida carteirinhas, consulta na área.</small></div><span class="tag">8 usuários</span></div>
-    <div class="lrow"><div class="av" style="background:var(--warn)">SA</div><div style="flex:1"><b>Saúde Ocupacional</b><small>Gerencia validade de ASO.</small></div><span class="tag">3 usuários</span></div>
-    <div class="lrow"><div class="av" style="background:var(--mut)">CO</div><div style="flex:1"><b>Colaborador</b><small>Consulta a própria carteirinha por RE / QR (sem login).</small></div><span class="tag">${DATA.length} pessoas</span></div>
+// ---- usuários da plataforma (in-memory) ----
+const PERFIS=['Administrador','Segurança do Trabalho (SHE)','Saúde Ocupacional'];
+const PERFIL_COR={'Administrador':'var(--uni)','Segurança do Trabalho (SHE)':'var(--ok)','Saúde Ocupacional':'var(--warn)'};
+let USERS=null;
+function initUsers(){if(USERS)return;USERS=[
+  {id:'u1',nome:'Ana Gomes',email:'ana.gomes@unilever.com',perfil:'Administrador',ativo:true},
+  {id:'u2',nome:'Marcos Oliveira',email:'marcos.oliveira@unilever.com',perfil:'Segurança do Trabalho (SHE)',ativo:true},
+  {id:'u3',nome:'Ludmilla Borges',email:'ludmilla.borges@unilever.com',perfil:'Segurança do Trabalho (SHE)',ativo:true},
+  {id:'u4',nome:'Laura Oliveira',email:'laura.oliveira@unilever.com',perfil:'Saúde Ocupacional',ativo:true},
+];}
+function viewConfig(){initUsers();
+  const cnt=p=>USERS.filter(u=>u.perfil===p&&u.ativo).length;
+  return `<div class="ph"><div><h1>Configurações</h1><p>Usuários, perfis de acesso e regras da carteirinha.</p></div>
+    <div class="sp"><button class="btn pri" onclick="openUserModal(null)">${ui('plus',16)} Novo usuário</button></div></div>
+  <div class="panel"><div class="pt"><b>Usuários da plataforma</b><small>criados e gerenciados aqui, sem login corporativo</small></div>
+    <div class="tbl-scroll"><table><thead><tr><th>Usuário</th><th>E-mail</th><th>Perfil</th><th>Situação</th><th></th></tr></thead>
+    <tbody id="user-tbody"></tbody></table></div></div>
+  <div class="panel" style="margin-top:16px"><div class="pt"><b>Perfis de acesso</b></div><div class="pb">
+    <div class="lrow"><div class="av" style="background:var(--uni)">AD</div><div style="flex:1"><b>Administrador</b><small>Gerencia usuários, treinamentos, colaboradores e integrações. Login por e-mail e senha.</small></div><span class="tag">${cnt('Administrador')} usuário(s)</span></div>
+    <div class="lrow"><div class="av" style="background:var(--ok)">SH</div><div style="flex:1"><b>Segurança do Trabalho (SHE)</b><small>Emite e valida carteirinhas, consulta na área. Login por e-mail e senha.</small></div><span class="tag">${cnt('Segurança do Trabalho (SHE)')} usuário(s)</span></div>
+    <div class="lrow"><div class="av" style="background:var(--warn)">SA</div><div style="flex:1"><b>Saúde Ocupacional</b><small>Gerencia validade de ASO. Login por e-mail e senha.</small></div><span class="tag">${cnt('Saúde Ocupacional')} usuário(s)</span></div>
+    <div class="lrow"><div class="av" style="background:var(--mut)">CO</div><div style="flex:1"><b>Colaborador</b><small>Consulta a própria carteirinha por RE / QR. Sem login.</small></div><span class="tag">${DATA.length} pessoas</span></div>
   </div></div>
   <div class="panel" style="margin-top:16px"><div class="pt"><b>Regra de vencimento</b></div><div class="pb" style="color:var(--mut);font-size:13.5px;line-height:1.8">
     Aviso de <b style="color:var(--warn)">vencimento próximo</b> disparado <b style="color:var(--ink)">60 dias</b> antes.<br>
@@ -991,6 +1007,43 @@ function viewConfig(){
     Colaborador com qualquer treinamento vencido fica <b style="color:var(--bad)">Inapto</b> para a atividade correspondente.
   </div></div>`;
 }
+function renderUserTable(){initUsers();const tb=document.getElementById('user-tbody');if(!tb)return;
+  tb.innerHTML=USERS.map(u=>{const c=PERFIL_COR[u.perfil]||'var(--mut)';const ini=initials(u.nome);
+    return `<tr onclick="openUserModal('${u.id}')" style="${u.ativo?'':'opacity:.55'}">
+      <td><div class="cell-nm"><div class="av" style="background:${u.ativo?c:'#8a93a6'}">${ini}</div><b>${esc(u.nome)}</b></div></td>
+      <td style="color:var(--mut)">${esc(u.email)}</td>
+      <td><span class="tag" style="background:${c}14;color:${c}">${u.perfil}</span></td>
+      <td>${u.ativo?'<span class="st ok"><span class="d"></span>Ativo</span>':'<span class="st" style="color:var(--mut)"><span class="d" style="background:var(--mut2)"></span>Inativo</span>'}</td>
+      <td style="text-align:right;color:var(--mut2)">${ui('chev',16)}</td></tr>`;}).join('');
+}
+function openUserModal(id){initUsers();
+  const u=id?USERS.find(x=>x.id===id):null;
+  const opts=PERFIS.map(p=>`<option ${u&&u.perfil===p?'selected':''}>${p}</option>`).join('');
+  showModal(`<div class="mh">${ui('users',20)}<b>${id?'Editar usuário':'Novo usuário'}</b><button class="x" onclick="closeAll()">${ui('x',16)}</button></div>
+    <div class="mb">
+      <div style="margin-bottom:14px"><span class="flabel2">Nome</span><input class="inp" id="uf-nome" value="${u?esc(u.nome):''}" placeholder="Nome completo"></div>
+      <div style="margin-bottom:14px"><span class="flabel2">E-mail</span><input class="inp" id="uf-email" value="${u?esc(u.email):''}" placeholder="nome@empresa.com"></div>
+      <div style="margin-bottom:14px"><span class="flabel2">Perfil de acesso</span><select class="inp" id="uf-perfil">${opts}</select></div>
+      ${id?'':'<div style="margin-bottom:16px"><span class="flabel2">Senha inicial</span><input class="inp" id="uf-senha" type="text" value="" placeholder="o usuário troca no 1º acesso"></div>'}
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div class="switch ${!u||u.ativo?'on':''}" id="uf-ativo" onclick="this.classList.toggle('on')"></div><span style="font-size:13.5px;font-weight:600">Usuário ativo</span></div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        ${id?`<button class="btn" style="justify-content:center;color:var(--bad);border-color:#f1c4c0" onclick="deleteUser('${id}')">Remover</button>`:''}
+        <button class="btn" style="flex:1;justify-content:center" onclick="closeAll()">Cancelar</button>
+        <button class="btn pri" style="flex:1;justify-content:center" onclick="saveUser(${id?`'${id}'`:'null'})">${id?'Salvar':'Criar'}</button></div>
+    </div>`);
+}
+function saveUser(id){
+  const nome=(document.getElementById('uf-nome').value||'').trim();
+  const email=(document.getElementById('uf-email').value||'').trim();
+  if(!nome){toast('Informe o nome');return;}
+  if(!email||!email.includes('@')){toast('Informe um e-mail válido');return;}
+  const perfil=document.getElementById('uf-perfil').value;
+  const ativo=document.getElementById('uf-ativo').classList.contains('on');
+  if(id){Object.assign(USERS.find(x=>x.id===id),{nome,email,perfil,ativo});}
+  else{USERS.push({id:'u'+Date.now(),nome,email,perfil,ativo});}
+  closeAll();renderRoute();toast(id?'Usuário atualizado':'Usuário criado. Convite enviado por e-mail.');
+}
+function deleteUser(id){USERS=USERS.filter(x=>x.id!==id);closeAll();renderRoute();toast('Usuário removido');}
 
 /* ---- notif / modal ---- */
 function toggleNotif(){const n=document.getElementById('notif');const open=n.classList.contains('on');
