@@ -517,14 +517,15 @@ function carteirinhaHTML(e){
       <button class="cbtn ${state.type==='exec'?'on':''}" onclick="setType('exec')">Executor<small>executa atividades</small></button>
       <button class="cbtn lib ${state.type==='lib'?'on':''}" onclick="setType('lib')">Liberador<small>autoriza atividades</small></button>
     </div>
-    <div class="badge-card">${state.type==='exec'?execCard(e):libCard(e)}
+    <div class="badge-card">${state.type==='exec'?execCard(e,{aso:state.screen!=='consult'}):libCard(e)}
       <div class="authseal">
         <div class="qr qrauto" data-seed="${e.re}${state.type}"></div>
         <div><b>${ico('shield',15)} Documento autenticado</b><small>Verificado em 27/08/2026 · nº ${e.re}-UNI-${(parseInt(e.re)%9973)}<br>Substitui a carteirinha física. Vale só com selo digital ativo.</small></div>
       </div>
     </div></div>`;
 }
-function execCard(e){
+function execCard(e,opts={}){
+  const showAso=opts.aso!==false;
   const st=empStatus(e);
   const stMap={ok:['ok','✓ Apto para as atividades'],warn:['warn','⚠ Atenção: treinamento vencendo'],bad:['bad','✕ Inapto: habilitação vencida']};
   const [sc,sl]=stMap[st];
@@ -550,7 +551,7 @@ function execCard(e){
     </div>
     <div class="idrow">
       <div class="idcell"><small>Renov. integração</small><b class="${igS}">${igS==='bad'?'Vencida':fmt(ig)}</b></div>
-      <div class="idcell"><small>Renov. ASO</small><b class="${asoS}">${asoS==='bad'?'Vencido':fmt(aso)}</b></div>
+      ${showAso?`<div class="idcell"><small>Renov. ASO</small><b class="${asoS}">${asoS==='bad'?'Vencido':fmt(aso)}</b></div>`:''}
     </div>
     <div class="status-strip ${sc}"><span class="dot"></span>${sl}</div>
     <div class="tr-sec" style="padding:12px 16px 4px">Habilitações ativas · ${habil.length}</div>
@@ -559,7 +560,7 @@ function execCard(e){
     <div class="warnbar">${ico('flame',14)} Não opere equipamentos com habilitação vencida</div>
     <div class="sign-row">
       <div class="sign"><div class="sc" style="background:var(--ok)">${ico('shield',16)}</div><div><small>Visto SHE</small><b style="color:var(--ok)">Segurança ✓</b></div></div>
-      <div class="sign"><div class="sc" style="background:var(--${asoS==='bad'?'bad':'ok'})">${ico('cert',16)}</div><div><small>Visto Saúde</small><b style="color:var(--${asoS==='bad'?'bad':'ok'})">${asoS==='bad'?'ASO vencido':'ASO válido'}</b></div></div>
+      ${showAso?`<div class="sign"><div class="sc" style="background:var(--${asoS==='bad'?'bad':'ok'})">${ico('cert',16)}</div><div><small>Visto Saúde</small><b style="color:var(--${asoS==='bad'?'bad':'ok'})">${asoS==='bad'?'ASO vencido':'ASO válido'}</b></div></div>`:''}
     </div>
     <div class="card-foot"><span>Emitido 27/08/2026</span><span>UNI-${e.re}-${(parseInt(e.re)%9973)}</span></div>`;
 }
@@ -813,7 +814,7 @@ function viewColab(){
         <div class="info-cell"><small>Turno</small><b>${e.turno}</b></div>
         <div class="info-cell"><small>Gestor</small><b>${esc((e.gestor||'—').split(',')[0])}</b></div>
         <div class="info-cell"><small>Habilitações</small><b>${e.trainings.length} treinamentos</b></div>
-        <div class="info-cell"><small>Renov. ASO</small><b class="${daysTo(aso)<0?'':''}" style="color:${daysTo(aso)<0?'var(--bad)':'var(--ink)'}">${fmt(aso)}</b></div>
+        <div class="info-cell" style="border-color:#f0dcae"><small style="color:var(--warn)">Renov. ASO · restrito Saúde/Admin</small><b style="color:${daysTo(aso)<0?'var(--bad)':'var(--ink)'}">${fmt(aso)}</b></div>
         <div class="info-cell"><small>Renov. integração</small><b style="color:${daysTo(ig)<0?'var(--bad)':'var(--ink)'}">${fmt(ig)}</b></div>
       </div>
       <div class="ph" style="margin-bottom:12px"><div><h1 style="font-size:17px">Histórico de treinamentos</h1></div>
